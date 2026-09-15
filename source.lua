@@ -1,8 +1,17 @@
 --[[
-    Compkiller Interface - ENHANCED EDITION v3.0
+    Compkiller Interface - ENHANCED EDITION v3.1
     Original: 4lpaca (https://github.com/4lpaca-pin/CompKiller)
     Enhanced: Fpliz
     License: MIT
+
+    CHANGELOG v3.1:
+    - Sistema de temas completo (Purple, Cyan, Midnight, Emerald, Crimson, Matrix, Golden, NeonPink, Sunset, Sable)
+    - Dropdown com overlay (não empurra o layout)
+    - _DrawKeybinds funcional (mostra keybinds ativos)
+    - ProtectGui aplicado após Parent
+    - Correção de glyphs nos botões minimizar/fechar
+    - Correção de nomenclatura MiniColorPicker
+    - Keybind global funcionando
 ]]
 
 export type cloneref = (target: Instance) -> Instance;
@@ -132,7 +141,7 @@ local Mouse = LocalPlayer:GetMouse();
 local CurrentCamera = cloneref(workspace.CurrentCamera);
 
 local Compkiller = {
-    Version = '3.0-Enhanced',
+    Version = '3.1-Enhanced',
     Logo = "rbxassetid://120245531583106",
     Windows = {},
     Scale = {Window = UDim2.new(0, 485,0, 565), Mobile = UDim2.new(0, 450,0, 375), TabOpen = 185, TabClose = 85},
@@ -141,16 +150,97 @@ local Compkiller = {
     NilFolder = Instance.new('Folder'),
     ArcylicParent = CurrentCamera,
     ProtectGui = protect_gui or protectgui or (syn and syn.protect_gui) or function(s) return s; end,
+    CurrentTheme = "Purple",
 };
 
-Compkiller.Colors = {
-    Highlight = Color3.fromRGB(139, 92, 246), Toggle = Color3.fromRGB(167, 139, 250),
-    Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(15, 15, 18),
-    BlockColor = Color3.fromRGB(22, 22, 26), StrokeColor = Color3.fromRGB(38, 38, 45),
-    SwitchColor = Color3.fromRGB(250, 250, 252), DropColor = Color3.fromRGB(32, 32, 38),
-    MouseEnter = Color3.fromRGB(48, 42, 70), BlockBackground = Color3.fromRGB(28, 26, 36),
-    LineColor = Color3.fromRGB(45, 40, 58), HighStrokeColor = Color3.fromRGB(60, 50, 90),
+-- ============================================================
+-- SISTEMA DE TEMAS
+-- ============================================================
+Compkiller.Themes = {
+    Purple = {
+        Highlight = Color3.fromRGB(139, 92, 246), Toggle = Color3.fromRGB(167, 139, 250),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(15, 15, 18),
+        BlockColor = Color3.fromRGB(22, 22, 26), StrokeColor = Color3.fromRGB(38, 38, 45),
+        SwitchColor = Color3.fromRGB(250, 250, 252), DropColor = Color3.fromRGB(32, 32, 38),
+        MouseEnter = Color3.fromRGB(48, 42, 70), BlockBackground = Color3.fromRGB(28, 26, 36),
+        LineColor = Color3.fromRGB(45, 40, 58), HighStrokeColor = Color3.fromRGB(60, 50, 90),
+    },
+    Cyan = {
+        Highlight = Color3.fromRGB(34, 211, 238), Toggle = Color3.fromRGB(103, 232, 249),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(12, 18, 22),
+        BlockColor = Color3.fromRGB(18, 26, 32), StrokeColor = Color3.fromRGB(35, 48, 58),
+        SwitchColor = Color3.fromRGB(245, 252, 255), DropColor = Color3.fromRGB(26, 38, 46),
+        MouseEnter = Color3.fromRGB(24, 62, 78), BlockBackground = Color3.fromRGB(22, 34, 42),
+        LineColor = Color3.fromRGB(40, 58, 68), HighStrokeColor = Color3.fromRGB(50, 90, 110),
+    },
+    Midnight = {
+        Highlight = Color3.fromRGB(96, 165, 250), Toggle = Color3.fromRGB(147, 197, 253),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(8, 12, 22),
+        BlockColor = Color3.fromRGB(14, 20, 34), StrokeColor = Color3.fromRGB(30, 42, 62),
+        SwitchColor = Color3.fromRGB(245, 248, 255), DropColor = Color3.fromRGB(20, 30, 48),
+        MouseEnter = Color3.fromRGB(28, 44, 72), BlockBackground = Color3.fromRGB(18, 28, 46),
+        LineColor = Color3.fromRGB(32, 48, 72), HighStrokeColor = Color3.fromRGB(48, 76, 116),
+    },
+    Emerald = {
+        Highlight = Color3.fromRGB(16, 185, 129), Toggle = Color3.fromRGB(52, 211, 153),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(10, 18, 15),
+        BlockColor = Color3.fromRGB(16, 26, 22), StrokeColor = Color3.fromRGB(34, 52, 44),
+        SwitchColor = Color3.fromRGB(245, 255, 250), DropColor = Color3.fromRGB(24, 38, 32),
+        MouseEnter = Color3.fromRGB(24, 64, 52), BlockBackground = Color3.fromRGB(20, 34, 28),
+        LineColor = Color3.fromRGB(38, 60, 50), HighStrokeColor = Color3.fromRGB(50, 96, 78),
+    },
+    Crimson = {
+        Highlight = Color3.fromRGB(239, 68, 68), Toggle = Color3.fromRGB(252, 129, 129),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(18, 10, 10),
+        BlockColor = Color3.fromRGB(28, 16, 16), StrokeColor = Color3.fromRGB(58, 34, 34),
+        SwitchColor = Color3.fromRGB(255, 245, 245), DropColor = Color3.fromRGB(42, 24, 24),
+        MouseEnter = Color3.fromRGB(78, 24, 24), BlockBackground = Color3.fromRGB(38, 22, 22),
+        LineColor = Color3.fromRGB(70, 40, 40), HighStrokeColor = Color3.fromRGB(120, 56, 56),
+    },
+    Matrix = {
+        Highlight = Color3.fromRGB(34, 197, 94), Toggle = Color3.fromRGB(74, 222, 128),
+        Risky = Color3.fromRGB(250, 204, 21), BGDBColor = Color3.fromRGB(5, 12, 8),
+        BlockColor = Color3.fromRGB(10, 20, 14), StrokeColor = Color3.fromRGB(24, 42, 30),
+        SwitchColor = Color3.fromRGB(230, 255, 240), DropColor = Color3.fromRGB(16, 30, 22),
+        MouseEnter = Color3.fromRGB(18, 58, 34), BlockBackground = Color3.fromRGB(14, 28, 20),
+        LineColor = Color3.fromRGB(28, 52, 36), HighStrokeColor = Color3.fromRGB(40, 90, 58),
+    },
+    Golden = {
+        Highlight = Color3.fromRGB(234, 179, 8), Toggle = Color3.fromRGB(250, 204, 21),
+        Risky = Color3.fromRGB(239, 68, 68), BGDBColor = Color3.fromRGB(18, 15, 8),
+        BlockColor = Color3.fromRGB(28, 24, 14), StrokeColor = Color3.fromRGB(58, 50, 30),
+        SwitchColor = Color3.fromRGB(255, 252, 240), DropColor = Color3.fromRGB(42, 36, 20),
+        MouseEnter = Color3.fromRGB(78, 62, 20), BlockBackground = Color3.fromRGB(38, 32, 18),
+        LineColor = Color3.fromRGB(70, 58, 32), HighStrokeColor = Color3.fromRGB(120, 96, 40),
+    },
+    NeonPink = {
+        Highlight = Color3.fromRGB(236, 72, 153), Toggle = Color3.fromRGB(244, 114, 182),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(18, 8, 16),
+        BlockColor = Color3.fromRGB(28, 14, 24), StrokeColor = Color3.fromRGB(58, 30, 50),
+        SwitchColor = Color3.fromRGB(255, 245, 252), DropColor = Color3.fromRGB(42, 22, 36),
+        MouseEnter = Color3.fromRGB(78, 24, 62), BlockBackground = Color3.fromRGB(38, 20, 32),
+        LineColor = Color3.fromRGB(70, 36, 58), HighStrokeColor = Color3.fromRGB(120, 56, 96),
+    },
+    Sunset = {
+        Highlight = Color3.fromRGB(249, 115, 22), Toggle = Color3.fromRGB(251, 146, 60),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(18, 12, 10),
+        BlockColor = Color3.fromRGB(28, 20, 16), StrokeColor = Color3.fromRGB(58, 40, 32),
+        SwitchColor = Color3.fromRGB(255, 248, 240), DropColor = Color3.fromRGB(42, 28, 22),
+        MouseEnter = Color3.fromRGB(78, 40, 20), BlockBackground = Color3.fromRGB(38, 26, 20),
+        LineColor = Color3.fromRGB(70, 46, 36), HighStrokeColor = Color3.fromRGB(120, 72, 50),
+    },
+    Sable = {
+        Highlight = Color3.fromRGB(148, 163, 184), Toggle = Color3.fromRGB(203, 213, 225),
+        Risky = Color3.fromRGB(251, 191, 36), BGDBColor = Color3.fromRGB(10, 10, 12),
+        BlockColor = Color3.fromRGB(18, 18, 22), StrokeColor = Color3.fromRGB(38, 38, 44),
+        SwitchColor = Color3.fromRGB(245, 245, 250), DropColor = Color3.fromRGB(28, 28, 34),
+        MouseEnter = Color3.fromRGB(46, 46, 56), BlockBackground = Color3.fromRGB(24, 24, 30),
+        LineColor = Color3.fromRGB(44, 44, 52), HighStrokeColor = Color3.fromRGB(66, 66, 78),
+    },
 };
+
+Compkiller.Colors = {};
+for k, v in pairs(Compkiller.Themes.Purple) do Compkiller.Colors[k] = v end;
 
 Compkiller.Elements = {
     Highlight = {}, DropHighlight = {}, Risky = {}, BGDBColor = {}, BlockColor = {},
@@ -162,7 +252,34 @@ Compkiller.IaDrag = false;
 Compkiller.LastDrag = tick();
 Compkiller.Flags = {};
 
--- ===== SISTEMA DE SONS (com ID fornecido) =====
+function Compkiller:SetTheme(name)
+    local theme = Compkiller.Themes[name];
+    if not theme then return false end;
+    Compkiller.CurrentTheme = name;
+    for k, v in pairs(theme) do
+        Compkiller.Colors[k] = v;
+        for _, obj in pairs(Compkiller.Elements[k] or {}) do
+            pcall(function()
+                if typeof(obj) == "Instance" then
+                    if obj:IsA("Frame") or obj:IsA("TextButton") or obj:IsA("TextLabel") then
+                        obj.BackgroundColor3 = v;
+                    elseif obj:IsA("UIStroke") then
+                        obj.Color = v;
+                    elseif obj:IsA("ImageLabel") then
+                        obj.ImageColor3 = v;
+                    end;
+                elseif type(obj) == "table" and obj.Update then
+                    obj:Update();
+                end;
+            end);
+        end;
+    end;
+    return true;
+end;
+
+-- ============================================================
+-- SISTEMA DE SONS
+-- ============================================================
 Compkiller.Sounds = {
     Enabled = true, Volume = 0.5,
     Click = "rbxassetid://139719503904449",
@@ -198,7 +315,9 @@ function Compkiller:PlaySound(name, pitch, volume)
     sound:Play();
 end;
 
--- ===== AUTO-SAVE =====
+-- ============================================================
+-- AUTO-SAVE
+-- ============================================================
 Compkiller._AutoSave = {Enabled = false, Config = nil, Name = "auto", Interval = 30};
 function Compkiller:EnableAutoSave(ConfigManager, name, interval)
     Compkiller._AutoSave.Enabled = true;
@@ -225,7 +344,9 @@ function Compkiller:DisableAutoSave()
     return true;
 end;
 
--- ===== BUSCA DE ELEMENTOS =====
+-- ============================================================
+-- BUSCA DE ELEMENTOS
+-- ============================================================
 function Compkiller:SearchElements(query)
     query = string.lower(query or "");
     if query == "" then return {} end;
@@ -242,6 +363,9 @@ function Compkiller:SearchElements(query)
     return results;
 end;
 
+-- ============================================================
+-- ÍCONES
+-- ============================================================
 Compkiller.Lucide = {
     ['lucide-mouse-2'] = "rbxassetid://10088146939",
     ['lucide-internet'] = "rbxassetid://12785195438",
@@ -297,6 +421,10 @@ Compkiller.Lucide = {
     ['lucide-diamond'] = "rbxassetid://10709819149",
     ['lucide-flame'] = "rbxassetid://10723376114",
     ['lucide-rocket'] = "rbxassetid://10734934585",
+    ['lucide-chevron-down'] = "rbxassetid://10709790948",
+    ['lucide-chevron-up'] = "rbxassetid://10709791523",
+    ['lucide-chevron-left'] = "rbxassetid://10709791281",
+    ['lucide-chevron-right'] = "rbxassetid://10709791437",
 };
 
 Compkiller.FontAwesome = {
@@ -346,6 +474,7 @@ function Compkiller:SetAllText(flags)
 end;
 
 function Compkiller:_GetIcon(name, font_aws)
+    if type(name) == "string" and string.find(name, "rbxassetid://", 1, true) then return name end;
     if Compkiller.SecureMode then
         local AssetId;
         if font_aws then AssetId = Compkiller.FontAwesome[name] or name;
@@ -472,7 +601,6 @@ function Compkiller:_Blur(element, WindowRemote)
 end;
 
 function Compkiller:_AddDragBlacklist(Frame)
-    local IsAdded = false; local BASE_TIME = 0.01;
     local SET_BLACKLIST = function(value)
         local index = table.find(Compkiller.DragBlacklist , Frame);
         if value and not Compkiller.IS_DRAG_MOVE then
@@ -568,7 +696,7 @@ end;
 function Compkiller:_IsMobile() return UserInputService.TouchEnabled; end;
 
 -- ============================================================
--- _AddLinkValue : conecta flag e sincroniza mudanças
+-- _AddLinkValue
 -- ============================================================
 function Compkiller:_AddLinkValue(flagName, obj)
     if not flagName then return obj end;
@@ -581,7 +709,7 @@ function Compkiller:_AddLinkValue(flagName, obj)
 end;
 
 -- ============================================================
--- _CreateBlock : cria bloco / seção
+-- _CreateBlock
 -- ============================================================
 function Compkiller:_CreateBlock(parent, info)
     info = Compkiller.__CONFIG(info, {Name = "Section", Position = "left"});
@@ -630,7 +758,7 @@ function Compkiller:_CreateBlock(parent, info)
 end;
 
 -- ============================================================
--- _AddColorPickerPanel : painel de cor estilo HSV
+-- _AddColorPickerPanel
 -- ============================================================
 function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, callback)
     defaultColor = defaultColor or Color3.fromRGB(139, 92, 246);
@@ -653,7 +781,6 @@ function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, cal
     Stroke.Thickness = 1;
     Stroke.Parent = Panel;
 
-    -- Área S/V (gradiente)
     local SV = Instance.new("Frame");
     SV.Name = "SV";
     SV.BackgroundColor3 = Color3.fromHSV(h, 1, 1);
@@ -665,7 +792,7 @@ function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, cal
 
     local WhiteGrad = Instance.new("Frame", SV);
     WhiteGrad.BackgroundColor3 = Color3.new(1,1,1); WhiteGrad.BorderSizePixel = 0;
-    WhiteGrad.Size = UDim2.new(1,0,1,0); WhiteGrad.BackgroundTransparency = 0.0;
+    WhiteGrad.Size = UDim2.new(1,0,1,0);
     local wg = Instance.new("UIGradient", WhiteGrad);
     wg.Color = ColorSequence.new(Color3.new(1,1,1), Color3.new(1,1,1));
     wg.Transparency = NumberSequence.new({
@@ -696,8 +823,6 @@ function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, cal
     local sstroke = Instance.new("UIStroke"); sstroke.Color = Color3.new(0,0,0); sstroke.Thickness = 1; sstroke.Parent = SVCursor;
 
     local function updateSV()
-        local absPos = SV.AbsolutePosition;
-        local absSize = SV.AbsoluteSize;
         SVCursor.Position = UDim2.new(s, 0, 1 - v, 0) - UDim2.new(0, 4, 0, 4);
         SV.BackgroundColor3 = Color3.fromHSV(h, 1, 1);
     end;
@@ -727,7 +852,6 @@ function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, cal
         end;
     end);
 
-    -- Barra de Hue
     local Hue = Instance.new("Frame");
     Hue.BackgroundColor3 = Color3.new(1,1,1);
     Hue.BorderSizePixel = 0;
@@ -770,7 +894,6 @@ function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, cal
         end;
     end);
 
-    -- Barra de Transparência
     local Alpha = Instance.new("Frame");
     Alpha.BackgroundColor3 = Color3.fromRGB(100,100,100);
     Alpha.BorderSizePixel = 0;
@@ -814,8 +937,11 @@ function Compkiller:_AddColorPickerPanel(parent, defaultColor, transparency, cal
 end;
 
 -- ============================================================
--- _DrawKeybinds : desenha UI de keybinds na tela
+-- _DrawKeybinds
 -- ============================================================
+Compkiller._ActiveKeybinds = {};
+Compkiller._KeybindFrame = nil;
+
 function Compkiller:_DrawKeybinds()
     if Compkiller._KeybindFrame then
         Compkiller._KeybindFrame:Destroy();
@@ -825,7 +951,8 @@ function Compkiller:_DrawKeybinds()
     Frame.Name = "CompkillerKeybinds";
     Frame.BackgroundTransparency = 1;
     Frame.Position = UDim2.new(0, 20, 0.5, -100);
-    Frame.Size = UDim2.new(0, 140, 0, 200);
+    Frame.Size = UDim2.new(0, 180, 0, 0);
+    Frame.AutomaticSize = Enum.AutomaticSize.Y;
     Frame.Parent = CoreGui;
 
     local List = Instance.new("UIListLayout", Frame);
@@ -833,18 +960,56 @@ function Compkiller:_DrawKeybinds()
     List.SortOrder = Enum.SortOrder.LayoutOrder;
 
     Compkiller._KeybindFrame = Frame;
+    Compkiller:_RefreshKeybinds();
     return Frame;
 end;
 
+function Compkiller:_RefreshKeybinds()
+    if not Compkiller._KeybindFrame then return end;
+    for _, child in ipairs(Compkiller._KeybindFrame:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end;
+    end
+    for name, data in pairs(Compkiller._ActiveKeybinds) do
+        if data.Visible ~= false then
+            local Item = Instance.new("Frame", Compkiller._KeybindFrame);
+            Item.BackgroundColor3 = Compkiller.Colors.BlockColor;
+            Item.BorderSizePixel = 0;
+            Item.Size = UDim2.new(1, 0, 0, 24);
+            local ic = Instance.new("UICorner", Item); ic.CornerRadius = UDim.new(0, 6);
+            local ist = Instance.new("UIStroke", Item); ist.Color = Compkiller.Colors.LineColor;
+
+            local Label = Instance.new("TextLabel", Item);
+            Label.BackgroundTransparency = 1;
+            Label.Size = UDim2.new(1, -10, 1, 0);
+            Label.Position = UDim2.new(0, 8, 0, 0);
+            Label.Font = Enum.Font.Gotham;
+            Label.Text = string.format("%s  -  %s", tostring(name), tostring(data.Key));
+            Label.TextColor3 = Color3.fromRGB(220, 220, 230);
+            Label.TextSize = 11;
+            Label.TextXAlignment = Enum.TextXAlignment.Left;
+        end
+    end
+end;
+
+function Compkiller:RegisterKeybindDisplay(name, key, visible)
+    Compkiller._ActiveKeybinds[name] = {Key = key, Visible = visible ~= false};
+    Compkiller:_RefreshKeybinds();
+end;
+
+function Compkiller:UnregisterKeybindDisplay(name)
+    Compkiller._ActiveKeybinds[name] = nil;
+    Compkiller:_RefreshKeybinds();
+end;
+
 -- ============================================================
--- _KeybindHandler : registra e trata keybinds
+-- _KeybindHandler
 -- ============================================================
 Compkiller._KeybindConnections = {};
-function Compkiller:_KeybindHandler(key, callback, onState, blacklist)
+function Compkiller:_KeybindHandler(key, callback, blacklist)
     blacklist = blacklist or {};
+    local keyStr = typeof(key) == "EnumItem" and key.Name or tostring(key);
     local conn = UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end;
-        local keyStr = typeof(key) == "EnumItem" and key.Name or tostring(key);
         if input.KeyCode.Name == keyStr or input.UserInputType.Name == keyStr then
             if table.find(blacklist, input.KeyCode) then return end;
             if callback then callback(keyStr, true) end;
@@ -852,7 +1017,6 @@ function Compkiller:_KeybindHandler(key, callback, onState, blacklist)
     end);
     local conn2 = UserInputService.InputEnded:Connect(function(input, gpe)
         if gpe then return end;
-        local keyStr = typeof(key) == "EnumItem" and key.Name or tostring(key);
         if input.KeyCode.Name == keyStr or input.UserInputType.Name == keyStr then
             if table.find(blacklist, input.KeyCode) then return end;
             if callback then callback(keyStr, false) end;
@@ -864,7 +1028,7 @@ function Compkiller:_KeybindHandler(key, callback, onState, blacklist)
 end;
 
 -- ============================================================
--- _LoadOption : container de opção (bloco)
+-- _LoadOption
 -- ============================================================
 function Compkiller:_LoadOption(parent, name, height)
     local Option = Instance.new("Frame");
@@ -887,7 +1051,7 @@ function Compkiller:_LoadOption(parent, name, height)
 end;
 
 -- ============================================================
--- _LoadDropdown : elemento dropdown
+-- _LoadDropdown (com overlay - não empurra layout)
 -- ============================================================
 function Compkiller:_LoadDropdown(parent, config)
     config = Compkiller.__CONFIG(config, {
@@ -927,24 +1091,19 @@ function Compkiller:_LoadDropdown(parent, config)
     Arrow.ImageColor3 = Color3.fromRGB(160, 160, 170);
     Arrow.Parent = Option;
 
-    local Holder = Instance.new("Frame");
-    Holder.BackgroundTransparency = 1;
-    Holder.Position = UDim2.new(0, 0, 1, 6);
-    Holder.Size = UDim2.new(1, 0, 0, 0);
-    Holder.AutomaticSize = Enum.AutomaticSize.Y;
-    Holder.Visible = false;
-    Holder.ZIndex = 10;
-    Holder.Parent = parent;
+    -- Overlay no ScreenGui (não ocupa espaço no layout)
+    local Overlay = Instance.new("Frame");
+    Overlay.Name = "DropdownOverlay";
+    Overlay.BackgroundColor3 = Compkiller.Colors.DropColor;
+    Overlay.BorderSizePixel = 0;
+    Overlay.Size = UDim2.new(0, 0, 0, 0);
+    Overlay.Visible = false;
+    Overlay.ZIndex = 500;
+    Overlay.Parent = Option:FindFirstAncestorWhichIsA("ScreenGui") or CoreGui;
+    local oc = Instance.new("UICorner", Overlay); oc.CornerRadius = UDim.new(0, 6);
+    local ost = Instance.new("UIStroke", Overlay); ost.Color = Compkiller.Colors.LineColor;
 
-    local DropStroke = Instance.new("UIStroke", Holder);
-    DropStroke.Color = Compkiller.Colors.LineColor;
-    DropStroke.Thickness = 1;
-    local DropCorner = Instance.new("UICorner", Holder);
-    DropCorner.CornerRadius = UDim.new(0, 6);
-    Holder.BackgroundColor3 = Compkiller.Colors.DropColor;
-    Holder.BackgroundTransparency = 0;
-
-    local List = Instance.new("UIListLayout", Holder);
+    local List = Instance.new("UIListLayout", Overlay);
     List.Padding = UDim.new(0, 2);
     List.SortOrder = Enum.SortOrder.LayoutOrder;
 
@@ -962,19 +1121,34 @@ function Compkiller:_LoadDropdown(parent, config)
             local count = 0; for _ in pairs(selectedValues) do count = count + 1 end;
             Selected.Text = count .. " selected";
         else
-            for k in pairs(selectedValues) do Selected.Text = k; break end;
-            if next(selectedValues) == nil then Selected.Text = "None" end;
+            local any = false;
+            for k in pairs(selectedValues) do Selected.Text = k; any = true; break end;
+            if not any then Selected.Text = "None" end;
         end;
     end;
     updateSelectedLabel();
 
+    local function layoutItems()
+        local h = 4;
+        for _, child in ipairs(Overlay:GetChildren()) do
+            if child:IsA("TextButton") then h = h + child.AbsoluteSize.Y + 2 end;
+        end
+        Overlay.Size = UDim2.new(0, Option.AbsoluteSize.X, 0, h);
+        Overlay.Position = UDim2.new(0, Option.AbsolutePosition.X, 0, Option.AbsolutePosition.Y + Option.AbsoluteSize.Y + 4);
+    end;
+
     local opened = false;
-    Compkiller:_Input(Option, function()
+    local function toggle()
         opened = not opened;
-        Holder.Visible = opened;
+        Overlay.Visible = opened;
         Compkiller:PlaySound("Dropdown");
         Compkiller:_Animation(Arrow, TweenInfo.new(0.15), {Rotation = opened and 180 or 0});
-    end);
+        if opened then
+            task.defer(layoutItems);
+        end
+    end
+
+    Compkiller:_Input(Option, toggle);
 
     for _, value in ipairs(config.Values) do
         local Item = Instance.new("TextButton");
@@ -986,7 +1160,8 @@ function Compkiller:_LoadDropdown(parent, config)
         Item.TextColor3 = Color3.fromRGB(220, 220, 228);
         Item.TextSize = 12;
         Item.TextXAlignment = Enum.TextXAlignment.Left;
-        Item.Parent = Holder;
+        Item.Parent = Overlay;
+        Item.ZIndex = 501;
 
         local ItemPad = Instance.new("UIPadding", Item);
         ItemPad.PaddingLeft = UDim.new(0, 10);
@@ -1003,22 +1178,30 @@ function Compkiller:_LoadDropdown(parent, config)
                 Item.TextColor3 = selectedValues[value] and Compkiller.Colors.Highlight or Color3.fromRGB(220, 220, 228);
             else
                 selectedValues = {[value] = true};
-                for _, child in ipairs(Holder:GetChildren()) do
+                for _, child in ipairs(Overlay:GetChildren()) do
                     if child:IsA("TextButton") then
                         child.TextColor3 = (child.Text == tostring(value)) and Compkiller.Colors.Highlight or Color3.fromRGB(220, 220, 228);
                     end
                 end
+                toggle();
             end
             updateSelectedLabel();
             config.Callback(config.Multi and selectedValues or value);
         end);
     end;
 
+    local function updatePos()
+        if opened then
+            Overlay.Position = UDim2.new(0, Option.AbsolutePosition.X, 0, Option.AbsolutePosition.Y + Option.AbsoluteSize.Y + 4);
+        end
+    end;
+    RunService.RenderStepped:Connect(updatePos);
+
     return Option;
 end;
 
 -- ============================================================
--- _LoadElement : carrega todos os tipos de elementos
+-- _LoadElement
 -- ============================================================
 function Compkiller:_LoadElement(parent, elementType, config)
     config = config or {};
@@ -1232,21 +1415,32 @@ function Compkiller:_LoadElement(parent, elementType, config)
             KeyBtn.Text = "...";
         end);
 
-        local conn = UserInputService.InputBegan:Connect(function(input, gpe)
+        UserInputService.InputBegan:Connect(function(input, gpe)
             if not listening then return end;
             if gpe then return end;
             if table.find(config.Blacklist, input.KeyCode) then return end;
             listening = false;
-            currentKey = input.KeyCode;
-            KeyBtn.Text = input.KeyCode.Name;
-            if config.Callback then config.Callback(input.KeyCode.Name) end;
+            currentKey = input.KeyCode.Name;
+            KeyBtn.Text = currentKey;
+            Compkiller:RegisterKeybindDisplay(config.Name, currentKey);
+            if config.Callback then config.Callback(currentKey) end;
         end);
+
+        if config.Flag then
+            Compkiller:_AddLinkValue(config.Flag, {
+                GetValue = function() return currentKey end,
+                SetValue = function(_, v) currentKey = v; KeyBtn.Text = v end,
+                SetText = function() end,
+            });
+        end;
+
+        Compkiller:RegisterKeybindDisplay(config.Name, typeof(config.Default) == "EnumItem" and config.Default.Name or tostring(config.Default));
         return Option;
 
     elseif elementType == "Dropdown" then
         return Compkiller:_LoadDropdown(parent, config);
 
-    elseif elementType == "ColorPicker" or elementType == "MiniColorPicker" then
+    elseif elementType == "ColorPicker" or elementType == "MiniColorPicker" or elementType == "MiniColorpicker" then
         local Option = Compkiller:_LoadOption(parent, config.Name or "Color", 36);
         Compkiller:_AddDragBlacklist(Option);
         local Color = config.Default or Color3.fromRGB(139, 92, 246);
@@ -1337,7 +1531,7 @@ function Compkiller:_LoadElement(parent, elementType, config)
 end;
 
 -- ============================================================
--- Compkiller.new : cria a janela principal
+-- Compkiller.new
 -- ============================================================
 function Compkiller.new(config)
     config = Compkiller.__CONFIG(config, {
@@ -1350,22 +1544,19 @@ function Compkiller.new(config)
         ToggleKeybind = "RightShift",
     });
 
+    if config.Theme and Compkiller.Themes[config.Theme] then
+        Compkiller:SetTheme(config.Theme);
+    end
+
     local ScreenGui = Instance.new("ScreenGui");
     ScreenGui.Name = Compkiller:_RandomString();
     ScreenGui.IgnoreGuiInset = true;
     ScreenGui.ResetOnSpawn = false;
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
-    Compkiller.ProtectGui(ScreenGui);
+    ScreenGui.DisplayOrder = 999999;
     ScreenGui.Parent = CoreGui;
+    Compkiller.ProtectGui(ScreenGui);
 
-    -- Overlay para fechar com clique fora
-    local Overlay = Instance.new("TextButton");
-    Overlay.BackgroundTransparency = 1;
-    Overlay.Size = UDim2.new(1, 0, 1, 0);
-    Overlay.Text = "";
-    Overlay.Parent = ScreenGui;
-
-    -- Janela principal
     local Main = Instance.new("Frame");
     Main.Name = "Main";
     Main.BackgroundColor3 = Compkiller.Colors.BGDBColor;
@@ -1382,7 +1573,6 @@ function Compkiller.new(config)
     MainStroke.Color = Compkiller.Colors.StrokeColor;
     MainStroke.Thickness = 1;
 
-    -- Barra de título
     local TopBar = Instance.new("Frame", Main);
     TopBar.Name = "TopBar";
     TopBar.BackgroundColor3 = Compkiller.Colors.BlockColor;
@@ -1406,28 +1596,26 @@ function Compkiller.new(config)
     Title.TextSize = 14;
     Title.TextXAlignment = Enum.TextXAlignment.Left;
 
-    -- Botões de controle
     local Minimize = Instance.new("TextButton", TopBar);
     Minimize.BackgroundTransparency = 1;
     Minimize.Size = UDim2.new(0, 30, 0, 30);
     Minimize.Position = UDim2.new(1, -70, 0.5, -15);
-    Minimize.Font = Enum.Font.GothamBold;
-    Minimize.Text = "—";
+    Minimize.Font = Enum.Font.GothamBlack;
+    Minimize.Text = "−";
     Minimize.TextColor3 = Color3.fromRGB(180, 180, 190);
-    Minimize.TextSize = 16;
-    local mc = Instance.new("UICorner", Minimize); mc.CornerRadius = UDim.new(0, 6);
+    Minimize.TextSize = 20;
+    Minimize.AutoButtonColor = false;
 
     local Close = Instance.new("TextButton", TopBar);
     Close.BackgroundTransparency = 1;
     Close.Size = UDim2.new(0, 30, 0, 30);
     Close.Position = UDim2.new(1, -36, 0.5, -15);
-    Close.Font = Enum.Font.GothamBold;
-    Close.Text = "✕";
+    Close.Font = Enum.Font.GothamBlack;
+    Close.Text = "×";
     Close.TextColor3 = Color3.fromRGB(180, 180, 190);
-    Close.TextSize = 14;
-    local cc = Instance.new("UICorner", Close); cc.CornerRadius = UDim.new(0, 6);
+    Close.TextSize = 18;
+    Close.AutoButtonColor = false;
 
-    -- Sidebar (tabs)
     local Sidebar = Instance.new("Frame", Main);
     Sidebar.Name = "Sidebar";
     Sidebar.BackgroundColor3 = Compkiller.Colors.BlockColor;
@@ -1444,7 +1632,6 @@ function Compkiller.new(config)
     TabPad.PaddingLeft = UDim.new(0, 8);
     TabPad.PaddingRight = UDim.new(0, 8);
 
-    -- Container de conteúdo
     local Content = Instance.new("Frame", Main);
     Content.Name = "Content";
     Content.BackgroundTransparency = 1;
@@ -1470,7 +1657,6 @@ function Compkiller.new(config)
     ContentPad.PaddingRight = UDim.new(0, 10);
     ContentPad.PaddingBottom = UDim.new(0, 10);
 
-    -- Janela miníma para reabrir
     local MiniButton = Instance.new("TextButton", ScreenGui);
     MiniButton.BackgroundColor3 = Compkiller.Colors.BlockColor;
     MiniButton.BorderSizePixel = 0;
@@ -1487,7 +1673,6 @@ function Compkiller.new(config)
     Compkiller:Drag(TopBar, Main, 0.1);
     Compkiller:Drag(MiniButton, MiniButton, 0.1);
 
-    -- Estado de visibilidade
     local visible = true;
     local function setVisible(v)
         visible = v;
@@ -1500,14 +1685,12 @@ function Compkiller.new(config)
     Minimize.MouseButton1Click:Connect(function() setVisible(false) end);
     MiniButton.MouseButton1Click:Connect(function() setVisible(true) end);
 
-    -- Keybind de toggle
     if config.ToggleKeybind then
         Compkiller:_KeybindHandler(config.ToggleKeybind, function(_, state)
             if state then setVisible(not visible) end;
         end);
     end;
 
-    -- Retorno da janela
     local WindowObj = {};
     WindowObj.Name = config.Name;
     WindowObj.Gui = ScreenGui;
@@ -1536,10 +1719,8 @@ function Compkiller.new(config)
         pcall(function() ScreenGui:Destroy() end);
     end;
 
-    -- Cria tab
     function WindowObj:Tab(tabConfig)
         tabConfig = Compkiller.__CONFIG(tabConfig, {Name = "Tab", Icon = "", EnableScrolling = true});
-        local tabName = tabConfig.Name;
 
         local TabBtn = Instance.new("TextButton", Sidebar);
         TabBtn.BackgroundColor3 = Compkiller.Colors.BlockColor;
@@ -1567,7 +1748,6 @@ function Compkiller.new(config)
         TabTitle.TextSize = 12;
         TabTitle.TextXAlignment = Enum.TextXAlignment.Left;
 
-        -- Container da aba
         local Container = Instance.new("Frame", ContentScroll);
         Container.Name = "Tab_"..tabConfig.Name;
         Container.BackgroundTransparency = 1;
@@ -1605,47 +1785,22 @@ function Compkiller.new(config)
             WindowObj:SelectTab(TabObj);
         end
 
-        -- Seções
         function TabObj:Section(sectionConfig)
             sectionConfig = Compkiller.__CONFIG(sectionConfig, {Name = "Section", Position = "left"});
             local Sec, Holder = Compkiller:_CreateBlock(Container, sectionConfig);
             local SecObj = {Holder = Holder, Name = sectionConfig.Name};
-            function SecObj:Toggle(cfg)
-                return Compkiller:_LoadElement(Holder, "Toggle", cfg);
-            end;
-            function SecObj:MiniToggle(cfg)
-                return Compkiller:_LoadElement(Holder, "MiniToggle", cfg);
-            end;
-            function SecObj:Slider(cfg)
-                return Compkiller:_LoadElement(Holder, "Slider", cfg);
-            end;
-            function SecObj:Dropdown(cfg)
-                return Compkiller:_LoadElement(Holder, "Dropdown", cfg);
-            end;
-            function SecObj:Button(cfg)
-                return Compkiller:_LoadElement(Holder, "Button", cfg);
-            end;
-            function SecObj:TextBox(cfg)
-                return Compkiller:_LoadElement(Holder, "TextBox", cfg);
-            end;
-            function SecObj:Keybind(cfg)
-                return Compkiller:_LoadElement(Holder, "Keybind", cfg);
-            end;
-            function SecObj:MiniKeybind(cfg)
-                return Compkiller:_LoadElement(Holder, "Keybind", cfg);
-            end;
-            function SecObj:ColorPicker(cfg)
-                return Compkiller:_LoadElement(Holder, "ColorPicker", cfg);
-            end;
-            function SecObj:MiniColorPicker(cfg)
-                return Compkiller:_LoadElement(Holder, "MiniColorPicker", cfg);
-            end;
-            function SecObj:Paragraph(cfg)
-                return Compkiller:_LoadElement(Holder, "Paragraph", cfg);
-            end;
-            function SecObj:Helper(cfg)
-                return Compkiller:_LoadElement(Holder, "Helper", cfg);
-            end;
+            function SecObj:Toggle(cfg) return Compkiller:_LoadElement(Holder, "Toggle", cfg) end;
+            function SecObj:MiniToggle(cfg) return Compkiller:_LoadElement(Holder, "MiniToggle", cfg) end;
+            function SecObj:Slider(cfg) return Compkiller:_LoadElement(Holder, "Slider", cfg) end;
+            function SecObj:Dropdown(cfg) return Compkiller:_LoadElement(Holder, "Dropdown", cfg) end;
+            function SecObj:Button(cfg) return Compkiller:_LoadElement(Holder, "Button", cfg) end;
+            function SecObj:TextBox(cfg) return Compkiller:_LoadElement(Holder, "TextBox", cfg) end;
+            function SecObj:Keybind(cfg) return Compkiller:_LoadElement(Holder, "Keybind", cfg) end;
+            function SecObj:MiniKeybind(cfg) return Compkiller:_LoadElement(Holder, "Keybind", cfg) end;
+            function SecObj:ColorPicker(cfg) return Compkiller:_LoadElement(Holder, "ColorPicker", cfg) end;
+            function SecObj:MiniColorPicker(cfg) return Compkiller:_LoadElement(Holder, "MiniColorPicker", cfg) end;
+            function SecObj:Paragraph(cfg) return Compkiller:_LoadElement(Holder, "Paragraph", cfg) end;
+            function SecObj:Helper(cfg) return Compkiller:_LoadElement(Holder, "Helper", cfg) end;
             return SecObj;
         end;
 
@@ -1756,7 +1911,7 @@ function Compkiller.ConfigManager(config)
 end;
 
 -- ============================================================
--- Loader (tela de carregamento)
+-- Loader
 -- ============================================================
 function Compkiller.Loader(text)
     text = text or "Loading...";
@@ -1764,8 +1919,9 @@ function Compkiller.Loader(text)
     ScreenGui.Name = Compkiller:_RandomString();
     ScreenGui.IgnoreGuiInset = true;
     ScreenGui.ResetOnSpawn = false;
-    Compkiller.ProtectGui(ScreenGui);
+    ScreenGui.DisplayOrder = 999999;
     ScreenGui.Parent = CoreGui;
+    Compkiller.ProtectGui(ScreenGui);
 
     local BG = Instance.new("Frame", ScreenGui);
     BG.BackgroundColor3 = Compkiller.Colors.BGDBColor;
@@ -1828,7 +1984,7 @@ function Compkiller.Loader(text)
 end;
 
 -- ============================================================
--- newNotify : notificações com tipos
+-- newNotify
 -- ============================================================
 Compkiller._NotifyHolder = nil;
 function Compkiller.newNotify(config)
@@ -1943,7 +2099,7 @@ function Compkiller.newNotify(config)
 end;
 
 -- ============================================================
--- Watermark com FPS / Ping / RAM / Time
+-- Watermark
 -- ============================================================
 function Compkiller.Watermark(config)
     config = Compkiller.__CONFIG(config, {Icon = "activity", Text = "Compkiller"});
@@ -1952,7 +2108,7 @@ function Compkiller.Watermark(config)
     WM.Name = "CompkillerWatermark";
     WM.BackgroundColor3 = Compkiller.Colors.BlockColor;
     WM.BorderSizePixel = 0;
-    WM.Size = UDim2.new(0, 280, 0, 26);
+    WM.Size = UDim2.new(0, 300, 0, 26);
     WM.Position = UDim2.new(0, 20, 0, 20);
     WM.Parent = CoreGui;
     local wmc = Instance.new("UICorner", WM); wmc.CornerRadius = UDim.new(0, 6);
